@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// const { program } = require('commander');
 import { program } from 'commander';
+import getDiff from '../src/index.js';
 
 program
   .description('Compares two configuration files and shows a difference.')
@@ -9,6 +9,6 @@ program
   .option('-f, --format [type]', 'output format')
   .argument('<filepath1>')
   .argument('<filepath2>')
-
+  .action(getDiff)
   
 program.parse(process.argv);
