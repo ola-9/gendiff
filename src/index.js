@@ -74,4 +74,7 @@ const getDiff = (file1, file2) => {
   return convertObjToStr(diffObj);
 };
 
+const getSquare = (number) => number ** 2;
+
 export default getDiff;
+export { getSquare };

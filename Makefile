@@ -15,3 +15,6 @@ f-lint:
 
 test:
 	node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest --bail
+
+test-coverage:
+	npm test -- --coverage --coverageProvider=v8
