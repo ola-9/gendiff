@@ -1,41 +1,40 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 
 const getObject = (filename) => {
-  /* 
+  /*
 Метод process.cwd() возвращает текущую рабочую директорию процесса Node.js
 */
   const currentWorkingDir = process.cwd();
   /*
-  resolve() - принимает составные части пути и возвращает абсолютный путь 
+  resolve() - принимает составные части пути и возвращает абсолютный путь
   полученного в результате обработки переданных сегментов пути.
   */
   let absolutePath = '';
 
   if (currentWorkingDir === '/Users/olga/Documents/GitHub/frontend-project-lvl2') {
-    absolutePath = path.resolve(currentWorkingDir, 'src/data/', filename);
+    absolutePath = path.resolve(currentWorkingDir, '__fixtures__', filename);
   } else {
-    absolutePath = path.resolve(currentWorkingDir, 'Documents/GitHub/frontend-project-lvl2/', 'src/data/', filename);
+    absolutePath = path.resolve(currentWorkingDir, 'Documents/GitHub/frontend-project-lvl2/', '__fixtures__', filename);
+  }
 
-  };
-  
   const file = fs.readFileSync(absolutePath, 'utf-8');
   return JSON.parse(file);
 };
 
 const convertObjToStr = (obj) => {
-  const keys = Object.keys(obj);
-  console.log('{');
+  const strObj = Object.entries(obj)
+    .reduce((acc, entry) => {
+      const el = `  ${entry[0]}: ${entry[1]}`;
+      acc.push(el);
+      return acc;
+    }, [])
+    .join('\n');
 
-  for (const key of keys) {
-    const formattedKey = key.replace("'", '');
-    const value = obj[key];
-    console.log(`  ${formattedKey}: ${value}`);
-  }
-
-  console.log('}');
+  const str = `{ \n${strObj} \n }`;
+  console.log(str);
+  return str;
 };
 
 const getDiff = (file1, file2) => {
@@ -47,27 +46,32 @@ const getDiff = (file1, file2) => {
 
   const keys = _.sortBy(_.union(obj1Keys, obj2Keys));
 
-  const diffObj = {};
+  const diffObj = keys.reduce(
+    (acc, key) => {
+      if (!_.has(obj2, key)) {
+        const updatedKey = `- ${key}`;
+        acc[updatedKey] = obj1[key];
+      } else if (!_.has(obj1, key)) {
+        const updatedKey = `+ ${key}`;
+        acc[updatedKey] = obj2[key];
+      } else if (_.has(obj1, key) && _.has(obj2, key) && obj1[key] !== obj2[key]) {
+        const updatedKey1 = `- ${key}`;
+        const updatedKey2 = `+ ${key}`;
+        acc[updatedKey1] = obj1[key];
+        acc[updatedKey2] = obj2[key];
+      } else {
+        const updatedKey = `  ${key}`;
+        acc[updatedKey] = obj1[key];
+      }
 
-  for (const key of keys) {
-    if (!_.has(obj2, key)) {
-      const updatedKey = `- ${key}`;
-      diffObj[updatedKey] = obj1[key];
-    } else if (!_.has(obj1, key)) {
-      const updatedKey = `+ ${key}`;
-      diffObj[updatedKey] = obj2[key];
-    } else if (_.has(obj1, key) && _.has(obj2, key) && obj1[key] !== obj2[key]) {
-      const updatedKey1 = `- ${key}`;
-      const updatedKey2 = `+ ${key}`
-      diffObj[updatedKey1] = obj1[key];
-      diffObj[updatedKey2] = obj2[key];
-    } else {
-      const updatedKey = `  ${key}`;
-      diffObj[updatedKey] = obj1[key];
-    }
-  }
-
-  convertObjToStr(diffObj);
+      return acc;
+    },
+    {},
+  );
+  // const result = convertObjToStr(diffObj);
+  // console.log(result);
+  // return result;
+  return convertObjToStr(diffObj);
 };
 
 export default getDiff;

@@ -9,6 +9,6 @@ program
   .option('-f, --format [type]', 'output format')
   .argument('<filepath1>')
   .argument('<filepath2>')
-  .action(getDiff)
-  
+  .action(getDiff);
+
 program.parse(process.argv);
