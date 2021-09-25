@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+// import { fileURLToPath } from 'url';
+// import path, { dirname } from 'path';
 
 const getObject = (filename) => {
   /*
@@ -32,12 +34,12 @@ const convertObjToStr = (obj) => {
     }, [])
     .join('\n');
 
-  const str = `{ \n${strObj} \n }`;
+  const str = `{\n${strObj}\n}`;
   console.log(str);
   return str;
 };
 
-const getDiff = (file1, file2) => {
+const genDiff = (file1, file2) => {
   const obj1 = getObject(file1);
   const obj2 = getObject(file2);
 
@@ -74,7 +76,9 @@ const getDiff = (file1, file2) => {
   return convertObjToStr(diffObj);
 };
 
-const getSquare = (number) => number ** 2;
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-export default getDiff;
-export { getSquare };
+// console.log(__dirname);
+
+export default genDiff;
