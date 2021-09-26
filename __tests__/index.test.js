@@ -9,8 +9,10 @@ const __dirname = dirname(__filename);
 // console.log(__dirname);
 
 test('genDiff', () => {
-  const file1 = path.resolve(__dirname, '..', '__fixtures__', 'file1.json');
-  const file2 = path.resolve(__dirname, '..', '__fixtures__', 'file2.json');
+  const file1json = path.resolve(__dirname, '..', '__fixtures__', 'file1.json');
+  const file2json = path.resolve(__dirname, '..', '__fixtures__', 'file2.json');
+  const file1yml = path.resolve(__dirname, '..', '__fixtures__', 'file1.yml');
+  const file2yml = path.resolve(__dirname, '..', '__fixtures__', 'file2.yml');
   const expectedStr = `{
   - follow: false
     host: hexlet.io
@@ -19,5 +21,8 @@ test('genDiff', () => {
   + timeout: 20
   + verbose: true
 }`;
-  expect(genDiff(file1, file2)).toBe(expectedStr);
+  expect(genDiff(file1json, file2json)).toBe(expectedStr);
+  expect(genDiff(file1yml, file2yml)).toBe(expectedStr);
+  expect(genDiff(file1json, file2yml)).toBe(expectedStr);
+  expect(genDiff(file1yml, file2json)).toBe(expectedStr);
 });

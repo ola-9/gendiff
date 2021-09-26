@@ -1,29 +1,5 @@
-import fs from 'fs';
-import path from 'path';
 import _ from 'lodash';
-// import { fileURLToPath } from 'url';
-// import path, { dirname } from 'path';
-
-const getObject = (filename) => {
-  /*
-Метод process.cwd() возвращает текущую рабочую директорию процесса Node.js
-*/
-  const currentWorkingDir = process.cwd();
-  /*
-  resolve() - принимает составные части пути и возвращает абсолютный путь
-  полученного в результате обработки переданных сегментов пути.
-  */
-  let absolutePath = '';
-
-  if (currentWorkingDir === '/Users/olga/Documents/GitHub/frontend-project-lvl2') {
-    absolutePath = path.resolve(currentWorkingDir, '__fixtures__', filename);
-  } else {
-    absolutePath = path.resolve(currentWorkingDir, 'Documents/GitHub/frontend-project-lvl2/', '__fixtures__', filename);
-  }
-
-  const file = fs.readFileSync(absolutePath, 'utf-8');
-  return JSON.parse(file);
-};
+import getObject from './parsers.js';
 
 const convertObjToStr = (obj) => {
   const strObj = Object.entries(obj)
@@ -70,15 +46,8 @@ const genDiff = (file1, file2) => {
     },
     {},
   );
-  // const result = convertObjToStr(diffObj);
-  // console.log(result);
-  // return result;
+
   return convertObjToStr(diffObj);
 };
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
-// console.log(__dirname);
 
 export default genDiff;
