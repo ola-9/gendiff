@@ -1,53 +1,44 @@
 import _ from 'lodash';
 import getObject from './parsers.js';
+import stylish from './stylish.js';
 
-const convertObjToStr = (obj) => {
-  const strObj = Object.entries(obj)
-    .reduce((acc, entry) => {
-      const el = `  ${entry[0]}: ${entry[1]}`;
-      acc.push(el);
-      return acc;
-    }, [])
-    .join('\n');
+const createDiffStructure = (obj1, obj2) => {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  const keys = _.sortBy(_.union(keys1, keys2));
+  const result = keys.reduce((acc, key) => {
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+    if (keys1.includes(key) && !keys2.includes(key)) {
+      acc[key] = { type: 'deleted', value: value1 };
+    } else if (!keys1.includes(key) && keys2.includes(key)) {
+      acc[key] = { type: 'added', value: value2 };
+    } else if (value1 === value2 && !_.isPlainObject(value1) && !_.isPlainObject(value2)) {
+      acc[key] = { type: 'unchanged', value: value1 };
+    } else if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
+      acc[key] = { type: 'parent', value: createDiffStructure(value1, value2) };
+    } else {
+      acc[key] = { type: 'changed', before: value1, after: value2 };
+    }
 
-  const str = `{\n${strObj}\n}`;
-  console.log(str);
-  return str;
+    return acc;
+  }, {});
+
+  return result;
 };
 
 const genDiff = (file1, file2) => {
   const obj1 = getObject(file1);
   const obj2 = getObject(file2);
 
-  const obj1Keys = Object.keys(obj1);
-  const obj2Keys = Object.keys(obj2);
-
-  const keys = _.sortBy(_.union(obj1Keys, obj2Keys));
-
-  const diffObj = keys.reduce(
-    (acc, key) => {
-      if (!_.has(obj2, key)) {
-        const updatedKey = `- ${key}`;
-        acc[updatedKey] = obj1[key];
-      } else if (!_.has(obj1, key)) {
-        const updatedKey = `+ ${key}`;
-        acc[updatedKey] = obj2[key];
-      } else if (_.has(obj1, key) && _.has(obj2, key) && obj1[key] !== obj2[key]) {
-        const updatedKey1 = `- ${key}`;
-        const updatedKey2 = `+ ${key}`;
-        acc[updatedKey1] = obj1[key];
-        acc[updatedKey2] = obj2[key];
-      } else {
-        const updatedKey = `  ${key}`;
-        acc[updatedKey] = obj1[key];
-      }
-
-      return acc;
-    },
-    {},
-  );
-
-  return convertObjToStr(diffObj);
+  const diffStructure = createDiffStructure(obj1, obj2);
+  const entries = Object.entries(diffStructure);
+  const entry0 = entries[0];
+  const entry3 = entries[3];
+  const testEntry0 = stylish(entry0);
+  console.log(testEntry0);
+  const testEntry3 = stylish(entry3);
+  console.log(testEntry3);
 };
 
 export default genDiff;
