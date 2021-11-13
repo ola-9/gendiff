@@ -16,9 +16,9 @@ const createDiffStructure = (obj1, obj2) => {
     } else if (value1 === value2 && !_.isPlainObject(value1) && !_.isPlainObject(value2)) {
       acc[key] = { type: 'unchanged', value: value1 };
     } else if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-      acc[key] = { type: 'parent', value: createDiffStructure(value1, value2) };
+      acc[key] = createDiffStructure(value1, value2);
     } else {
-      acc[key] = { type: 'changed', before: value1, after: value2 };
+      acc[key] = { type: 'changed', valueBefore: value1, valueAfter: value2 };
     }
 
     return acc;
@@ -27,18 +27,20 @@ const createDiffStructure = (obj1, obj2) => {
   return result;
 };
 
-const genDiff = (file1, file2) => {
+const genDiff = (file1, file2, options) => {
   const obj1 = getObject(file1);
   const obj2 = getObject(file2);
 
   const diffStructure = createDiffStructure(obj1, obj2);
-  const entries = Object.entries(diffStructure);
-  const entry0 = entries[0];
-  const entry3 = entries[3];
-  const testEntry0 = stylish(entry0);
-  console.log(testEntry0);
-  const testEntry3 = stylish(entry3);
-  console.log(testEntry3);
+
+  switch (options.format) {
+    case 'format2':
+      console.log('format2');
+      return 'format2';
+    default:
+      console.log(stylish(diffStructure));
+      return stylish(diffStructure);
+  }
 };
 
 export default genDiff;
