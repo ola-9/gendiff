@@ -1,24 +1,27 @@
 import fs from 'fs';
-import { test, expect } from '@jest/globals';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
+import { expect, describe, it } from '@jest/globals';
 import genDiff from '../src/index.js';
+import getFilePath from '../src/utils.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+describe('genDiffOutput', () => {
+  const file1json = getFilePath('file1.json');
+  const file2json = getFilePath('file2.json');
+  const file1yml = getFilePath('file1.yml');
+  const file2yml = getFilePath('file2.yml');
 
-// console.log(__dirname);
+  it('test stylish formatter', () => {
+    const stylishResultPath = getFilePath('expectedResultStylish.txt');
+    const expectedResultStylish = fs.readFileSync(stylishResultPath, 'utf-8');
 
-test('genDiff', () => {
-  const file1json = path.resolve(__dirname, '..', '__fixtures__', 'file1.json');
-  const file2json = path.resolve(__dirname, '..', '__fixtures__', 'file2.json');
-  const file1yml = path.resolve(__dirname, '..', '__fixtures__', 'file1.yml');
-  const file2yml = path.resolve(__dirname, '..', '__fixtures__', 'file2.yml');
-  const expectedStrPath = path.resolve(__dirname, '..', '__fixtures__', 'expectedStr.txt');
-  const expectedStr = fs.readFileSync(expectedStrPath, 'utf-8');
+    expect(genDiff(file1json, file2json, { format: 'stylish' })).toBe(expectedResultStylish);
+    expect(genDiff(file1yml, file2yml, { format: 'stylish' })).toBe(expectedResultStylish);
+  });
 
-  expect(genDiff(file1json, file2json, { format: 'stylish' })).toBe(expectedStr);
-  expect(genDiff(file1yml, file2yml, { format: 'stylish' })).toBe(expectedStr);
-  expect(genDiff(file1json, file2yml, { format: 'stylish' })).toBe(expectedStr);
-  expect(genDiff(file1yml, file2json, { format: 'stylish' })).toBe(expectedStr);
+  it('test plain formatter', () => {
+    const plainResultPath = getFilePath('expectedResultPlain.txt');
+    const expectedResultPlain = fs.readFileSync(plainResultPath, 'utf-8');
+
+    expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
+    expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
+  });
 });

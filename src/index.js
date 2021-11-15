@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import getObject from './parsers.js';
-import stylish from './stylish.js';
+import stylish from './formatters/stylish.js';
+import plain from './formatters/plain.js';
 
 const createDiffStructure = (obj1, obj2) => {
   const keys1 = Object.keys(obj1);
@@ -34,9 +35,9 @@ const genDiff = (file1, file2, options) => {
   const diffStructure = createDiffStructure(obj1, obj2);
 
   switch (options.format) {
-    case 'format2':
-      console.log('format2');
-      return 'format2';
+    case 'plain':
+      console.log(plain(diffStructure));
+      return plain(diffStructure);
     default:
       console.log(stylish(diffStructure));
       return stylish(diffStructure);

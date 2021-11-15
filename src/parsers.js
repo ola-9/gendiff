@@ -1,13 +1,10 @@
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
 import yaml from 'js-yaml';
+import path from 'path';
+import getFilePath from './utils.js';
 
 const getObject = (filename) => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-
-  const filePath = path.resolve(__dirname, '..', '__fixtures__', filename);
+  const filePath = getFilePath(filename);
   const file = fs.readFileSync(filePath, 'utf-8');
   const type = path.extname(filePath);
 
