@@ -2,6 +2,7 @@ import _ from 'lodash';
 import getObject from './parsers.js';
 import stylish from './formatters/stylish.js';
 import plain from './formatters/plain.js';
+import json from './formatters/json.js';
 
 const createDiffStructure = (obj1, obj2) => {
   const keys1 = Object.keys(obj1);
@@ -38,6 +39,9 @@ const genDiff = (file1, file2, options) => {
     case 'plain':
       console.log(plain(diffStructure));
       return plain(diffStructure);
+    case 'json':
+      console.log(json(diffStructure));
+      return json(diffStructure);
     default:
       console.log(stylish(diffStructure));
       return stylish(diffStructure);

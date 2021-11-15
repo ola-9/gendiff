@@ -24,4 +24,12 @@ describe('genDiffOutput', () => {
     expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
     expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
   });
+
+  it('test json formatter', () => {
+    const jsonResultPath = getFilePath('expectedResultJSON.txt');
+    const expectedResultJson = fs.readFileSync(jsonResultPath, 'utf-8');
+
+    expect(genDiff(file1yml, file2yml, { format: 'json' })).toBe(expectedResultJson);
+    expect(genDiff(file1yml, file2yml, { format: 'json' })).toBe(expectedResultJson);
+  });
 });

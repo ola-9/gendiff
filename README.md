@@ -8,6 +8,8 @@
 
 [![my workflow](https://github.com/ola-9/frontend-project-lvl2/actions/workflows/my-check.yml/badge.svg)](https://github.com/ola-9/frontend-project-lvl2/actions/workflows/my-check.yml)
 
+### Step8 asciinema
+[![asciicast](https://asciinema.org/a/3Cent8HDw9ClyvJVPHMsr45ND.svg)](https://asciinema.org/a/3Cent8HDw9ClyvJVPHMsr45ND)
 ### Step7 asciinema
 [![asciicast](https://asciinema.org/a/6LYrimg8EJiXKuBl4853ukk0P.svg)](https://asciinema.org/a/6LYrimg8EJiXKuBl4853ukk0P)
 ### Step6 asciinema
