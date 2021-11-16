@@ -12,18 +12,18 @@ const createDiffStructure = (obj1, obj2) => {
     const value1 = obj1[key];
     const value2 = obj2[key];
     if (keys1.includes(key) && !keys2.includes(key)) {
-      acc[key] = { type: 'deleted', value: value1 };
-    } else if (!keys1.includes(key) && keys2.includes(key)) {
-      acc[key] = { type: 'added', value: value2 };
-    } else if (value1 === value2 && !_.isPlainObject(value1) && !_.isPlainObject(value2)) {
-      acc[key] = { type: 'unchanged', value: value1 };
-    } else if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-      acc[key] = createDiffStructure(value1, value2);
-    } else {
-      acc[key] = { type: 'changed', valueBefore: value1, valueAfter: value2 };
+      return { ...acc, [key]: { type: 'deleted', value: value1 } };
     }
-
-    return acc;
+    if (!keys1.includes(key) && keys2.includes(key)) {
+      return { ...acc, [key]: { type: 'added', value: value2 } };
+    }
+    if (value1 === value2 && !_.isPlainObject(value1) && !_.isPlainObject(value2)) {
+      return { ...acc, [key]: { type: 'unchanged', value: value1 } };
+    }
+    if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
+      return { ...acc, [key]: createDiffStructure(value1, value2) };
+    }
+    return { ...acc, [key]: { type: 'changed', valueBefore: value1, valueAfter: value2 } };
   }, {});
 
   return result;
