@@ -21,7 +21,7 @@ describe('genDiffOutput', () => {
     const plainResultPath = getFilePath('expectedResultPlain.txt');
     const expectedResultPlain = fs.readFileSync(plainResultPath, 'utf-8');
 
-    expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
+    expect(genDiff(file1json, file2json, { format: 'plain' })).toBe(expectedResultPlain);
     expect(genDiff(file1yml, file2yml, { format: 'plain' })).toBe(expectedResultPlain);
   });
 
@@ -29,7 +29,7 @@ describe('genDiffOutput', () => {
     const jsonResultPath = getFilePath('expectedResultJSON.txt');
     const expectedResultJson = fs.readFileSync(jsonResultPath, 'utf-8');
 
-    expect(genDiff(file1yml, file2yml, { format: 'json' })).toBe(expectedResultJson);
+    expect(genDiff(file1json, file2json, { format: 'json' })).toBe(expectedResultJson);
     expect(genDiff(file1yml, file2yml, { format: 'json' })).toBe(expectedResultJson);
   });
 });

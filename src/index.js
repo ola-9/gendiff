@@ -34,7 +34,7 @@ const genDiff = (file1, file2, options) => {
   const obj2 = getObject(file2);
 
   const diffStructure = createDiffStructure(obj1, obj2);
-
+  // console.log('====>', options.format);
   switch (options.format) {
     case 'plain':
       console.log(plain(diffStructure));
