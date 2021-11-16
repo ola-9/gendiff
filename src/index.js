@@ -29,13 +29,13 @@ const createDiffStructure = (obj1, obj2) => {
   return result;
 };
 
-const genDiff = (file1, file2, options) => {
+const genDiff = (file1, file2, formatName = 'stylish') => {
   const obj1 = getObject(file1);
   const obj2 = getObject(file2);
 
   const diffStructure = createDiffStructure(obj1, obj2);
-  // console.log('====>', options.format);
-  switch (options.format) {
+
+  switch (formatName) {
     case 'plain':
       console.log(plain(diffStructure));
       return plain(diffStructure);
