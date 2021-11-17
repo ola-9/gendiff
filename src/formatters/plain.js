@@ -1,26 +1,5 @@
 import _ from 'lodash';
 
-const iter = (obj, keys) => {
-  const changes = Object.keys(obj)
-    .flatMap((innerKey) => {
-      const innerValue = obj[innerKey];
-      const {
-        type, value, valueBefore, valueAfter,
-      } = innerValue;
-
-      const path = [...keys, innerKey].join('.');
-
-      if (type) {
-        return {
-          path, type, value, valueBefore, valueAfter,
-        };
-      }
-
-      return iter(innerValue, [...keys, innerKey]);
-    });
-  return changes;
-};
-
 const formatValue = (value) => {
   if (typeof value === 'string') {
     return `'${value}'`;
@@ -33,41 +12,37 @@ const formatValue = (value) => {
   return value;
 };
 
-const plain = (diff) => {
-  const lines = Object.keys(diff)
-    .flatMap((groupKey) => {
-      const el = diff[groupKey];
+const plain = (diffs) => {
+  const iter = (obj, keys) => {
+    const result = obj
+      .flatMap((item) => {
+        const {
+          key, type, value, valueBefore, valueAfter,
+        } = item;
+        const path = [...keys, key].join('.');
+        if (type === 'removed') {
+          return `Property '${path}' was removed`;
+        }
 
-      if (el.type === 'added') {
-        return `Property '${groupKey}' was added with value: ${formatValue(el.value)}`;
-      }
+        if (type === 'added') {
+          return `Property '${path}' was added with value: ${formatValue(value)}`;
+        }
 
-      if (el.type === 'deleted') {
-        return `Property '${groupKey}' was removed`;
-      }
+        if (type === 'updated') {
+          return `Property '${path}' was updated. From ${formatValue(valueBefore)} to ${formatValue(valueAfter)}`;
+        }
 
-      return iter(el, [groupKey])
-        .map((changeGroup) => {
-          const {
-            path, type, value, valueBefore, valueAfter,
-          } = changeGroup;
+        if (type === 'existing') {
+          return iter(value, [...keys, key]);
+        }
 
-          if (type === 'added') {
-            return `Property '${path}' was added with value: ${formatValue(value)}`;
-          }
-          if (type === 'deleted') {
-            return `Property '${path}' was removed`;
-          }
-          if (type === 'changed') {
-            return `Property '${path}' was updated. From ${formatValue(valueBefore)} to ${formatValue(valueAfter)}`;
-          }
-          return '';
-        })
-        .filter((item) => item !== '');
-    });
+        return '';
+      })
+      .filter((item) => item !== '');
+    return result.join('\n');
+  };
 
-  // console.log(lines.join('\n'));
-  return lines.join('\n');
+  return iter(diffs, []);
 };
 
 export default plain;

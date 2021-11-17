@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { expect, describe, it } from '@jest/globals';
 import genDiff from '../src/index.js';
-import getFilePath from '../src/utils.js';
+import { getFilePath } from '../src/utils.js';
 
 describe('genDiffOutput', () => {
   const file1json = getFilePath('file1.json');

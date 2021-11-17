@@ -1,18 +1,19 @@
-import fs from 'fs';
 import yaml from 'js-yaml';
-import path from 'path';
-import getFilePath from './utils.js';
+import { getContent, getContentType } from './utils.js';
 
 const getObject = (filename) => {
-  const filePath = getFilePath(filename);
-  const file = fs.readFileSync(filePath, 'utf-8');
-  const type = path.extname(filePath);
-
-  if (type === '.yml' || type === '.yaml') {
-    return yaml.load(file);
+  const content = getContent(filename);
+  const contentType = getContentType(filename);
+  switch (contentType) {
+    case 'yml':
+      return yaml.load(content);
+    case 'yaml':
+      return yaml.load(content);
+    case 'json':
+      return JSON.parse(content);
+    default:
+      throw new Error('This content type is not supported');
   }
-
-  return JSON.parse(file);
 };
 
 export default getObject;

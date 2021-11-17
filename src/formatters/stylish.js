@@ -1,78 +1,62 @@
 import _ from 'lodash';
 
-const stringify = (obj, replacer = ' ', spacesCount = 4) => {
-  const iter = (currentValue, depth) => {
-    const indentSize = depth * spacesCount;
-    const currentIndent = replacer.repeat(indentSize);
-    const lines = Object.entries(currentValue)
-      .map(([key, value]) => {
-        if (typeof value !== 'object') {
-          return `${currentIndent}${key}: ${value}`;
-        }
-        return `${currentIndent}${key}: {\n${iter(value, depth + 1)}\n${currentIndent}}`;
-      });
-    return lines.join('\n');
-  };
-  return iter(obj, 2);
-};
-
-const iter = (obj, depth, replacer = ' ', spacesCount = 4) => {
-  const indent = replacer.repeat(spacesCount);
+const stringify = (currentValue, depth, replacer = ' ', spacesCount = 4) => {
   const indentSize = depth * spacesCount;
   const currentIndent = replacer.repeat(indentSize);
-  const innerKeys = Object.keys(obj)
-    .map((innerKey) => {
-      const innerValue = obj[innerKey];
-      const {
-        type, value, valueBefore, valueAfter,
-      } = innerValue;
-
-      const value2 = _.isPlainObject(value) ? `{\n${currentIndent}${stringify(value)}\n${indent}${currentIndent}}` : value;
-      const before2 = _.isPlainObject(valueBefore) ? `{\n${currentIndent}${stringify(valueBefore)}\n${indent}${currentIndent}}` : valueBefore;
-      const after2 = _.isPlainObject(valueAfter) ? `{\n${currentIndent}${stringify(valueAfter)}\n${indent}${currentIndent}}` : valueAfter;
-
-      if (type === 'added') {
-        return `${currentIndent}  + ${innerKey}: ${value2}`;
+  if (!_.isPlainObject(currentValue)) {
+    return `${currentValue}`;
+  }
+  const lines = Object.entries(currentValue)
+    .map(([key, value]) => {
+      if (!_.isPlainObject(value)) {
+        return `${currentIndent}${key}: ${value}`;
       }
-      if (type === 'deleted') {
-        return `${currentIndent}  - ${innerKey}: ${value}`;
-      }
-      if (type === 'changed') {
-        return `${currentIndent}  - ${innerKey}: ${before2}\n${currentIndent}  + ${innerKey}: ${after2}`;
-      }
-
-      if (type === 'unchanged') {
-        return `${indent}${currentIndent}${innerKey}: ${value}`;
-      }
-
-      return `${indent}${currentIndent}${innerKey}: {\n${iter(innerValue, depth + 1)}\n${indent}${currentIndent}}`;
+      return `${currentIndent}${key}: {\n${stringify(value, depth + 1)}\n${currentIndent}}`;
     });
-  return innerKeys.join('\n');
+  return lines.join('\n');
 };
 
-const stylish = (diff, replacer = ' ', spacesCount = 4) => {
-  const keys = Object.keys(diff)
-    .map((groupKey) => {
-      const el = diff[groupKey];
-      const indent = replacer.repeat(spacesCount);
-      if (el.type === 'added') {
-        const result = stringify(el.value);
-        const output = [`  + ${groupKey}: {`, `${result}`, `${indent}}`];
-        return output.join('\n');
+const typesOfIndent = {
+  added: '+ ',
+  removed: '- ',
+};
+
+const createLine = (indent, depth, type, key, value) => {
+  const currentIndent = type ? `${indent.slice(0, -2)}${typesOfIndent[type]}` : indent;
+  if (_.isPlainObject(value)) {
+    return [`${currentIndent}${key}: {`, `${stringify(value, depth)}\n${indent}}`].join('\n');
+  }
+  return [`${currentIndent}${key}: ${value}`].join('\n');
+};
+
+const stylish = (diffs, depth, replacer = ' ', spacesCount = 4) => {
+  const indentSize = depth * spacesCount;
+  const currIndent = replacer.repeat(indentSize);
+  const lines = diffs
+    .map((diff) => {
+      const { key, type, value } = diff;
+
+      if (type === 'added') {
+        return createLine(currIndent, depth + 1, type, key, value);
       }
 
-      if (el.type === 'deleted') {
-        const result = stringify(el.value);
-        const output = [`  - ${groupKey}: {`, `${result}`, `${indent}}`];
-        return output.join('\n');
+      if (type === 'removed') {
+        return createLine(currIndent, depth + 1, type, key, value);
       }
 
-      return `${indent}${groupKey}: {\n${iter(el, 1)}\n${indent}}`;
-    });
-  // console.log(keys.join('\n'));
-  const result = `{\n${keys.join('\n')}\n}`;
-  // console.log(result);
-  return result;
+      if (type === 'updated') {
+        const { valueBefore, valueAfter } = diff;
+        return `${createLine(currIndent, depth + 1, 'removed', key, valueBefore)}\n${createLine(currIndent, depth + 1, 'added', key, valueAfter)}`;
+      }
+
+      if (type === 'existing') {
+        return `${currIndent}${key}: {\n${stylish(value, depth + 1)}\n${currIndent}}`;
+      }
+
+      return `${currIndent}${key}: ${value}`;
+    })
+    .join('\n');
+  return lines;
 };
 
 export default stylish;

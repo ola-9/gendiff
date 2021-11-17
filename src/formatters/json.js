@@ -1,8 +1,6 @@
-const json = (diff) => {
-  const keys = Object.keys(diff);
-  const result = keys.map((key) => `"${key}":${JSON.stringify(diff[key])}`);
-  // console.log(`{${result.join(',')}}`);
-  return `{${result.join(',')}}`;
+const json = (diffs) => {
+  const result = diffs.map((diff) => JSON.stringify(diff));
+  return `[${result.join(',')}]`;
 };
 
 export default json;
