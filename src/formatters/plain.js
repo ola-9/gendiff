@@ -16,27 +16,27 @@ const plain = (diffs) => {
   const iter = (obj, keys) => {
     const result = obj
       .flatMap((item) => {
-        const {
-          key, type, value, valueBefore, valueAfter,
-        } = item;
+        const { key, type } = item;
         const path = [...keys, key].join('.');
-        if (type === 'removed') {
-          return `Property '${path}' was removed`;
-        }
 
-        if (type === 'added') {
-          return `Property '${path}' was added with value: ${formatValue(value)}`;
+        switch (type) {
+          case 'removed':
+            return `Property '${path}' was removed`;
+          case 'added': {
+            const { value } = item;
+            return `Property '${path}' was added with value: ${formatValue(value)}`;
+          }
+          case 'updated': {
+            const { valueBefore, valueAfter } = item;
+            return `Property '${path}' was updated. From ${formatValue(valueBefore)} to ${formatValue(valueAfter)}`;
+          }
+          case 'nested': {
+            const { children } = item;
+            return iter(children, [...keys, key]);
+          }
+          default:
+            return '';
         }
-
-        if (type === 'updated') {
-          return `Property '${path}' was updated. From ${formatValue(valueBefore)} to ${formatValue(valueAfter)}`;
-        }
-
-        if (type === 'existing') {
-          return iter(value, [...keys, key]);
-        }
-
-        return '';
       })
       .filter((item) => item !== '');
     return result.join('\n');

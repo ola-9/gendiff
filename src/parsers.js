@@ -1,9 +1,7 @@
 import yaml from 'js-yaml';
-import { getContent, getContentType } from './utils.js';
+// import { getContent, getContentType } from './utils.js';
 
-const getObject = (filename) => {
-  const content = getContent(filename);
-  const contentType = getContentType(filename);
+const getObject = (content, contentType) => {
   switch (contentType) {
     case 'yml':
       return yaml.load(content);
