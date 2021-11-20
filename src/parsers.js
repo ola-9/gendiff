@@ -1,5 +1,4 @@
 import yaml from 'js-yaml';
-// import { getContent, getContentType } from './utils.js';
 
 const getObject = (content, contentType) => {
   switch (contentType) {

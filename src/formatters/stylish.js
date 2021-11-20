@@ -35,7 +35,7 @@ const stylish = (diffs, depth) => {
           if (_.isPlainObject(value)) {
             return [`${adjustedIndent}${key}: {`, `${stringify(value, depth + 1)}\n${indent}}`].join('\n');
           }
-          return [`${adjustedIndent}${key}: ${value}`].join('\n');
+          return `${adjustedIndent}${key}: ${value}`;
         }
 
         case 'removed': {
@@ -44,7 +44,7 @@ const stylish = (diffs, depth) => {
           if (_.isPlainObject(value)) {
             return [`${adjustedIndent}${key}: {`, `${stringify(value, depth + 1)}\n${indent}}`].join('\n');
           }
-          return [`${adjustedIndent}${key}: ${value}`].join('\n');
+          return `${adjustedIndent}${key}: ${value}`;
         }
 
         case 'updated': {
@@ -53,12 +53,12 @@ const stylish = (diffs, depth) => {
           const adjustedIndentBefore = `${indent.slice(0, -2)}${typesOfIndent.removed}`;
           const lineBefore = (_.isPlainObject(valueBefore))
             ? [`${adjustedIndentBefore}${key}: {`, `${stringify(valueBefore, depth + 1)}\n${indent}}`].join('\n')
-            : [`${adjustedIndentBefore}${key}: ${valueBefore}`].join('\n');
+            : `${adjustedIndentBefore}${key}: ${valueBefore}`;
 
           const adjustedIndentAfter = `${indent.slice(0, -2)}${typesOfIndent.added}`;
           const lineAfter = (_.isPlainObject(valueAfter))
             ? [`${adjustedIndentAfter}${key}: {`, `${stringify(valueAfter, depth + 1)}\n${indent}}`].join('\n')
-            : [`${adjustedIndentAfter}${key}: ${valueAfter}`].join('\n');
+            : `${adjustedIndentAfter}${key}: ${valueAfter}`;
 
           return `${lineBefore}\n${lineAfter}`;
         }
