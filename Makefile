@@ -1,7 +1,4 @@
-install: 
-	install-deps
-
-install-deps:
+install:
 	npm ci 
 
 gendiff:

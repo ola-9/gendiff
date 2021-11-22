@@ -11,7 +11,7 @@ The CLI app to compare two configuration files and generate differences.
 ### Install dependencies 
 
 ```bash
-$ make install-deps
+$ make install
 ```
 
 ### Run eslint 
