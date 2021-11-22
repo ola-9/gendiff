@@ -18,7 +18,6 @@ const plain = (diffs) => {
       .flatMap((item) => {
         const { key, type } = item;
         const path = [...keys, key].join('.');
-
         switch (type) {
           case 'removed':
             return `Property '${path}' was removed`;
@@ -44,7 +43,6 @@ const plain = (diffs) => {
       .filter((item) => item !== '');
     return result.join('\n');
   };
-
   return iter(diffs, []);
 };
 

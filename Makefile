@@ -1,8 +1,15 @@
-install:
+install-deps:
 	npm ci 
 
 gendiff:
 	gendiff
+
+gendiff-install:
+	chmod +x bin/gendiff.js
+	npm limk
+
+gendiff-uninstall:
+	npm unlink
 
 publish:
 	npm publish --dry-run

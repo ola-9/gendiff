@@ -28,7 +28,6 @@ const createDiffStructure = (obj1, obj2) => {
       key, type: 'updated', valueBefore: value1, valueAfter: value2,
     };
   });
-  // console.dir(result, { depth: null });
   return result;
 };
 
@@ -48,9 +47,7 @@ const getFormattedOutput = (diffStructure, formatName) => {
 const genDiff = (content1, content2, formatName = 'stylish') => {
   const obj1 = getObject(getContent(content1), getContentType(content1));
   const obj2 = getObject(getContent(content2), getContentType(content2));
-
   const diffStructure = createDiffStructure(obj1, obj2);
-
   return getFormattedOutput(diffStructure, formatName);
 };
 
