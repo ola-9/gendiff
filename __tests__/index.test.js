@@ -1,33 +1,21 @@
 import fs from 'fs';
-import { expect, describe, it } from '@jest/globals';
+import { expect } from '@jest/globals';
 import genDiff from '../src/index.js';
 import { getFilePath } from '../src/utils.js';
 
-describe('genDiffOutput', () => {
+const expectedResultStylish = fs.readFileSync(getFilePath('expectedResultStylish.txt'), 'utf-8');
+const expectedResultPlain = fs.readFileSync(getFilePath('expectedResultPlain.txt'), 'utf-8');
+const expectedResultJson = fs.readFileSync(getFilePath('expectedResultJSON.txt'), 'utf-8');
+
+test.each([
+  { format: 'stylish', expected: expectedResultStylish },
+  { format: 'plain', expected: expectedResultPlain },
+  { format: 'json', expected: expectedResultJson },
+])('test $format formatter', ({ format, expected }) => {
   const file1json = getFilePath('file1.json');
   const file2json = getFilePath('file2.json');
   const file1yml = getFilePath('file1.yml');
   const file2yml = getFilePath('file2.yml');
-
-  it('test stylish formatter', () => {
-    const stylishResultPath = getFilePath('expectedResultStylish.txt');
-    const expectedResultStylish = fs.readFileSync(stylishResultPath, 'utf-8');
-
-    expect(genDiff(file1json, file2json, 'stylish')).toBe(expectedResultStylish);
-    expect(genDiff(file1yml, file2yml, 'stylish')).toBe(expectedResultStylish);
-  });
-
-  it('test plain formatter', () => {
-    const stylishResultPath = getFilePath('expectedResultPlain.txt');
-    const expectedResultPlain = fs.readFileSync(stylishResultPath, 'utf-8');
-    expect(genDiff(file1json, file2json, 'plain')).toBe(expectedResultPlain);
-    expect(genDiff(file1yml, file2yml, 'plain')).toBe(expectedResultPlain);
-  });
-
-  it('test json formatter', () => {
-    const stylishResultPath = getFilePath('expectedResultJSON.txt');
-    const expectedResultJson = fs.readFileSync(stylishResultPath, 'utf-8');
-    expect(genDiff(file1json, file2json, 'json')).toBe(expectedResultJson);
-    expect(genDiff(file1yml, file2yml, 'json')).toBe(expectedResultJson);
-  });
+  expect(genDiff(file1json, file2json, format)).toEqual(expected);
+  expect(genDiff(file1yml, file2yml, format)).toEqual(expected);
 });
