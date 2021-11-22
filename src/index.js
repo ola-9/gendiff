@@ -38,8 +38,10 @@ const getFormattedOutput = (diffStructure, formatName) => {
       return plain(diffStructure);
     case 'json':
       return json(diffStructure);
+    case 'stylish':
+      return `{\n${stylish(diffStructure)}\n}`;
     default:
-      return `{\n${stylish(diffStructure, 1)}\n}`;
+      throw new Error('This format is not supported');
   }
 };
 

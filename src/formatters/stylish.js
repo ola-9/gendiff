@@ -10,72 +10,69 @@ const createIndent = (depth, replacer = ' ', spacesCount = 4) => {
   return replacer.repeat(indentSize);
 };
 
-const stringify = (currentValue, depth) => {
+const stringify = (currentKey, currentValue, depth, type) => {
   const currentIndent = createIndent(depth);
+  const adjustedIndent = type ? `${currentIndent.slice(0, -2)}${typesOfIndent[type]}` : currentIndent;
+
+  if (!_.isPlainObject(currentValue)) {
+    return `${adjustedIndent}${currentKey}: ${currentValue}`;
+  }
+
   const lines = Object.entries(currentValue)
     .map(([key, value]) => {
       if (!_.isPlainObject(value)) {
-        return `${currentIndent}${key}: ${value}`;
+        return `${createIndent(1)}${currentIndent}${key}: ${value}`;
       }
-      return `${currentIndent}${key}: {\n${stringify(value, depth + 1)}\n${currentIndent}}`;
+      return `${stringify(key, value, depth + 1)}`;
     });
-  return lines.join('\n');
+  return [`${adjustedIndent}${currentKey}: {`, `${lines.join('\n')}`, `${currentIndent}}`].join('\n');
 };
 
-const stylish = (diffs, depth) => {
-  const indent = createIndent(depth);
-  const lines = diffs
-    .map((diff) => {
-      const { key, type } = diff;
+const stylish = (diffStructure) => {
+  const iter = (diffs, depth) => {
+    const indent = createIndent(depth);
+    const lines = diffs
+      .map((diff) => {
+        const { key, type } = diff;
 
-      switch (type) {
-        case 'added': {
-          const { value } = diff;
-          const adjustedIndent = `${indent.slice(0, -2)}${typesOfIndent[type]}`;
-          if (_.isPlainObject(value)) {
-            return [`${adjustedIndent}${key}: {`, `${stringify(value, depth + 1)}\n${indent}}`].join('\n');
+        switch (type) {
+          case 'added': {
+            const { value } = diff;
+            return stringify(key, value, depth, type);
           }
-          return `${adjustedIndent}${key}: ${value}`;
-        }
 
-        case 'removed': {
-          const { value } = diff;
-          const adjustedIndent = `${indent.slice(0, -2)}${typesOfIndent[type]}`;
-          if (_.isPlainObject(value)) {
-            return [`${adjustedIndent}${key}: {`, `${stringify(value, depth + 1)}\n${indent}}`].join('\n');
+          case 'removed': {
+            const { value } = diff;
+            return stringify(key, value, depth, type);
           }
-          return `${adjustedIndent}${key}: ${value}`;
+
+          case 'updated': {
+            const { valueBefore, valueAfter } = diff;
+            const lineBefore = stringify(key, valueBefore, depth, 'removed');
+            const lineAfter = stringify(key, valueAfter, depth, 'added');
+            return `${lineBefore}\n${lineAfter}`;
+          }
+
+          case 'nested': {
+            const { children } = diff;
+            return `${indent}${key}: {\n${iter(children, depth + 1)}\n${indent}}`;
+          }
+
+          case 'unchanged': {
+            const { value } = diff;
+            return `${indent}${key}: ${value}`;
+          }
+
+          default: {
+            throw new Error('This type is not supported.');
+          }
         }
+      })
+      .join('\n');
+    return lines;
+  };
 
-        case 'updated': {
-          const { valueBefore, valueAfter } = diff;
-
-          const adjustedIndentBefore = `${indent.slice(0, -2)}${typesOfIndent.removed}`;
-          const lineBefore = (_.isPlainObject(valueBefore))
-            ? [`${adjustedIndentBefore}${key}: {`, `${stringify(valueBefore, depth + 1)}\n${indent}}`].join('\n')
-            : `${adjustedIndentBefore}${key}: ${valueBefore}`;
-
-          const adjustedIndentAfter = `${indent.slice(0, -2)}${typesOfIndent.added}`;
-          const lineAfter = (_.isPlainObject(valueAfter))
-            ? [`${adjustedIndentAfter}${key}: {`, `${stringify(valueAfter, depth + 1)}\n${indent}}`].join('\n')
-            : `${adjustedIndentAfter}${key}: ${valueAfter}`;
-
-          return `${lineBefore}\n${lineAfter}`;
-        }
-
-        case 'nested': {
-          const { children } = diff;
-          return `${indent}${key}: {\n${stylish(children, depth + 1)}\n${indent}}`;
-        }
-
-        default: {
-          const { value } = diff;
-          return `${indent}${key}: ${value}`;
-        }
-      }
-    })
-    .join('\n');
-  return lines;
+  return iter(diffStructure, 1);
 };
 
 export default stylish;

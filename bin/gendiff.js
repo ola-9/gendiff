@@ -12,7 +12,6 @@ program
   .action((file1, file2, formatName) => {
     const result = genDiff(file1, file2, formatName.format);
     console.log(result);
-    return result;
   });
 
 program.parse(process.argv);

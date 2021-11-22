@@ -34,8 +34,11 @@ const plain = (diffs) => {
             const { children } = item;
             return iter(children, [...keys, key]);
           }
-          default:
+          case 'unchanged': {
             return '';
+          }
+          default:
+            throw new Error('This format is not supported.');
         }
       })
       .filter((item) => item !== '');
