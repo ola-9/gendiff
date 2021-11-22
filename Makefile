@@ -1,4 +1,4 @@
-intall: 
+install: 
 	install-deps
 
 install-deps:
