@@ -63,7 +63,7 @@ const stylish = (diffStructure) => {
             return `${indent}${key}: ${value}`;
           }
           default: {
-            throw new Error('This type is not supported.');
+            throw new Error(`This ${type} is not supported.`);
           }
         }
       })
