@@ -10,20 +10,27 @@ const createIndent = (depth, replacer = ' ', spacesCount = 4) => {
   return replacer.repeat(indentSize);
 };
 
-const stringify = (currentKey, currentValue, depth, type) => {
-  const currentIndent = createIndent(depth);
-  const adjustedIndent = type ? `${currentIndent.slice(0, -2)}${typesOfIndent[type]}` : currentIndent;
-  if (!_.isPlainObject(currentValue)) {
-    return `${adjustedIndent}${currentKey}: ${currentValue}`;
-  }
-  const lines = Object.entries(currentValue)
-    .map(([key, value]) => {
-      if (!_.isPlainObject(value)) {
-        return `${createIndent(1)}${currentIndent}${key}: ${value}`;
+const adjustIndent = (indent, type) => `${indent.slice(0, -2)}${typesOfIndent[type]}`;
+
+const stringify = (value, depth) => {
+  const indent = createIndent(depth);
+  const lines = Object.entries(value)
+    .map(([innerKey, innerValue]) => {
+      if (!_.isPlainObject(innerValue)) {
+        return `${indent}${innerKey}: ${innerValue}`;
       }
-      return `${stringify(key, value, depth + 1)}`;
+      return [`${indent}${innerKey}: {\n${stringify(innerValue, depth + 1)}\n${indent}}`].join('\n');
     });
-  return [`${adjustedIndent}${currentKey}: {`, `${lines.join('\n')}`, `${currentIndent}}`].join('\n');
+
+  return lines.join('\n');
+};
+
+const getValue = (value, depth, indent) => {
+  if (!_.isPlainObject(value)) {
+    return `${value}`;
+  }
+
+  return `{\n${stringify(value, depth + 1)}\n${indent}}`;
 };
 
 const stylish = (diffStructure) => {
@@ -35,16 +42,16 @@ const stylish = (diffStructure) => {
         switch (type) {
           case 'added': {
             const { value } = diff;
-            return stringify(key, value, depth, type);
+            return `${adjustIndent(indent, type)}${key}: ${getValue(value, depth, indent)}`;
           }
           case 'removed': {
             const { value } = diff;
-            return stringify(key, value, depth, type);
+            return `${adjustIndent(indent, type)}${key}: ${getValue(value, depth, indent)}`;
           }
           case 'updated': {
             const { valueBefore, valueAfter } = diff;
-            const lineBefore = stringify(key, valueBefore, depth, 'removed');
-            const lineAfter = stringify(key, valueAfter, depth, 'added');
+            const lineBefore = `${adjustIndent(indent, 'removed')}${key}: ${getValue(valueBefore, depth, indent)}`;
+            const lineAfter = `${adjustIndent(indent, 'added')}${key}: ${getValue(valueAfter, depth, indent)}`;
             return `${lineBefore}\n${lineAfter}`;
           }
           case 'nested': {
