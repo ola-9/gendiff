@@ -34,7 +34,7 @@ const createline = (keys, item, func) => {
       return '';
     }
     default:
-      throw new Error('This format is not supported.');
+      throw new Error(`This ${type} format is not supported.`);
   }
 };
 

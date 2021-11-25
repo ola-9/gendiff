@@ -11,7 +11,7 @@ const getFormattedOutput = (diffStructure, formatName) => {
     case 'stylish':
       return `{\n${stylish(diffStructure)}\n}`;
     default:
-      throw new Error(`This ${formatName} is not supported`);
+      throw new Error(`The ${formatName} format is not supported`);
   }
 };
 

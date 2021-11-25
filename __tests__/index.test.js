@@ -4,11 +4,6 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import genDiff from '../src/index.js';
 
-// const getFilePath = (filename) => {
-//   const __filename = fileURLToPath(import.meta.url);
-//   const __dirname = dirname(__filename);
-//   return path.resolve(__dirname, '..', '__fixtures__', filename);
-// };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
