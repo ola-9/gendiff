@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const createDiffStructure = (obj1, obj2) => {
-  const keys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
+  const keys = _.sortBy(_.union(_.keys(obj1), _.keys(obj2)));
   const result = keys.map((key) => {
     if (!_.has(obj2, key)) {
       return { key, type: 'removed', value: obj1[key] };

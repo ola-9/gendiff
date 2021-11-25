@@ -28,42 +28,41 @@ const stringify = (currentValue, depth) => {
   return `{\n${lines.join('\n')}\n${currentIndent.slice(0, -4)}}`;
 };
 
-const stylish = (diffStructure) => {
-  const iter = (diffs, depth) => {
-    const indent = createIndent(depth);
-    const lines = diffs
-      .map((diff) => {
-        const { key, type } = diff;
+const getLines = (diffs, depth) => {
+  const indent = createIndent(depth);
+  const lines = diffs
+    .map((diff) => {
+      const { key, type } = diff;
 
-        switch (type) {
-          case 'added':
-          case 'removed':
-          case 'unchanged': {
-            const { value } = diff;
-            return `${adjustIndent(indent, type)}${key}: ${stringify(value, depth + 1)}`;
-          }
-
-          case 'updated': {
-            const { valueBefore, valueAfter } = diff;
-            const lineBefore = `${adjustIndent(indent, 'removed')}${key}: ${stringify(valueBefore, depth + 1)}`;
-            const lineAfter = `${adjustIndent(indent, 'added')}${key}: ${stringify(valueAfter, depth + 1)}`;
-            return `${lineBefore}\n${lineAfter}`;
-          }
-
-          case 'nested': {
-            const { children } = diff;
-            return `${indent}${key}: {\n${iter(children, depth + 1)}\n${indent}}`;
-          }
-
-          default: {
-            throw new Error(`This ${type} is not supported.`);
-          }
+      switch (type) {
+        case 'added':
+        case 'removed':
+        case 'unchanged': {
+          const { value } = diff;
+          return `${adjustIndent(indent, type)}${key}: ${stringify(value, depth + 1)}`;
         }
-      })
-      .join('\n');
-    return lines;
-  };
-  return iter(diffStructure, 1);
+
+        case 'updated': {
+          const { valueBefore, valueAfter } = diff;
+          const lineBefore = `${adjustIndent(indent, 'removed')}${key}: ${stringify(valueBefore, depth + 1)}`;
+          const lineAfter = `${adjustIndent(indent, 'added')}${key}: ${stringify(valueAfter, depth + 1)}`;
+          return `${lineBefore}\n${lineAfter}`;
+        }
+
+        case 'nested': {
+          const { children } = diff;
+          return `${indent}${key}: {\n${getLines(children, depth + 1)}\n${indent}}`;
+        }
+
+        default: {
+          throw new Error(`This ${type} is not supported.`);
+        }
+      }
+    })
+    .join('\n');
+  return lines;
 };
+
+const stylish = (diffStructure) => getLines(diffStructure, 1);
 
 export default stylish;
