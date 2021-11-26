@@ -1,21 +1,14 @@
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
-
-const getFilePath = (filename) => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  return path.resolve(__dirname, '..', filename);
-};
+import path from 'path';
 
 const getContent = (filename) => {
-  const filePath = getFilePath(filename);
+  const filePath = path.resolve(process.cwd(), filename);
   return fs.readFileSync(filePath, 'utf-8');
 };
 
 const getContentType = (filename) => {
-  const filePath = getFilePath(filename);
+  const filePath = path.resolve(process.cwd(), filename);
   return path.extname(filePath).slice(1);
 };
 
-export { getFilePath, getContent, getContentType };
+export { getContent, getContentType };
