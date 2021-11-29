@@ -42,8 +42,16 @@ $ make gendiff-uninstall
 </details>
 
 ## Overview
-The application compares two files of the JSON or YAML format and generates differences in the following formats: stylish, plain, and JSON.
+The application compares two files of the JSON or YAML format and generates differences report in the following formats: stylish, plain, and JSON.
 
+This app is my learning project from the [Hexlet Frontend Developer course](https://ru.hexlet.io) aimed to get hands-on experience with the following topics:
+
+  - functional programming: no let/for/classes, immutable
+  - data structures and algorithms
+  - trees and depth-in-search
+  - testing and debugging with JEST
+  - setting-up configuration (linter, tests, CI)
+  - git & github actions
 ### Use
 ```
 Usage: gendiff [options] <filepath1> <filepath2>

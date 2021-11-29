@@ -19,12 +19,7 @@ const stringify = (currentValue, depth) => {
   }
   const currentIndent = createIndent(depth);
   const lines = Object.entries(currentValue)
-    .map(([key, value]) => {
-      if (!_.isPlainObject(value)) {
-        return `${currentIndent}${key}: ${value}`;
-      }
-      return `${currentIndent}${key}: ${stringify(value, depth + 1)}`;
-    });
+    .map(([key, value]) => `${currentIndent}${key}: ${stringify(value, depth + 1)}`);
   return `{\n${lines.join('\n')}\n${currentIndent.slice(0, -4)}}`;
 };
 

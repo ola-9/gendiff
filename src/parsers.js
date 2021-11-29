@@ -9,7 +9,7 @@ const getObject = (content, contentType) => {
     case 'json':
       return JSON.parse(content);
     default:
-      throw new Error('This content type is not supported');
+      throw new Error(`The content type of ${contentType} is not supported`);
   }
 };
 

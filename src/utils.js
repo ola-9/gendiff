@@ -2,13 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 const getContent = (filename) => {
-  const filePath = path.resolve(process.cwd(), filename);
+  const filePath = path.resolve(filename);
   return fs.readFileSync(filePath, 'utf-8');
 };
 
-const getContentType = (filename) => {
-  const filePath = path.resolve(process.cwd(), filename);
-  return path.extname(filePath).slice(1);
-};
+const getContentType = (filename) => path.extname(filename).slice(1);
 
 export { getContent, getContentType };
